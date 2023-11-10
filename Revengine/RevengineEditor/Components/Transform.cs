@@ -56,7 +56,7 @@ namespace RevengineEditor.Components
             }
         }
 
-        public Transform(GameEntity owner) : base(owner)
+        public Transform(Grievance owner) : base(owner)
         {
 
         }

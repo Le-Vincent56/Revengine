@@ -19,14 +19,14 @@ using System.Windows.Shapes;
 namespace RevengineEditor.Editors
 {
     /// <summary>
-    /// Interaction logic for GameEntityView.xaml
+    /// Interaction logic for GrievancesView.xaml
     /// </summary>
-    public partial class GameEntityView : UserControl
+    public partial class GrievancesView : UserControl
     {
-        public static GameEntityView Instance { get; private set; }
+        public static GrievancesView Instance { get; private set; }
         private Action _undoAction;
         private string _propertyName;
-        public GameEntityView()
+        public GrievancesView()
         {
             InitializeComponent();
             DataContext = null;
@@ -36,7 +36,7 @@ namespace RevengineEditor.Editors
             {
                 if (DataContext != null)
                 {
-                    (DataContext as MSEntity).PropertyChanged += (s, e) => _propertyName = e.PropertyName;
+                    (DataContext as MSObject).PropertyChanged += (s, e) => _propertyName = e.PropertyName;
                 }
             };
         }
@@ -44,36 +44,36 @@ namespace RevengineEditor.Editors
         private Action GetRenameAction()
         {
             // Retrieve DataContext
-            MSEntity viewModel = DataContext as MSEntity;
+            MSObject viewModel = DataContext as MSObject;
 
             // Get the names before changes
-            var selection = viewModel.SelectedEntities.Select(entity => (entity, entity.Name)).ToList();
+            var selection = viewModel.SelectedGrievances.Select(grievance => (grievance, grievance.Name)).ToList();
 
             return new Action(() =>
             {
                 // Restore old names
-                selection.ForEach(item => item.entity.Name = item.Name);
+                selection.ForEach(item => item.grievance.Name = item.Name);
 
                 // Refresh the DataContext
-                (DataContext as MSEntity).Refresh();
+                (DataContext as MSObject).Refresh();
             });
         }
 
         private Action GetIsEnabledAction()
         {
             // Retrieve DataContext
-            MSEntity viewModel = DataContext as MSEntity;
+            MSObject viewModel = DataContext as MSObject;
 
             // Get the names before changes
-            var selection = viewModel.SelectedEntities.Select(entity => (entity, entity.IsEnabled)).ToList();
+            var selection = viewModel.SelectedGrievances.Select(grievance => (grievance, grievance.IsEnabled)).ToList();
 
             return new Action(() =>
             {
                 // Restore old names
-                selection.ForEach(item => item.entity.IsEnabled = item.IsEnabled);
+                selection.ForEach(item => item.grievance.IsEnabled = item.IsEnabled);
 
                 // Refresh the DataContext
-                (DataContext as MSEntity).Refresh();
+                (DataContext as MSObject).Refresh();
             });
         }
 
@@ -85,13 +85,13 @@ namespace RevengineEditor.Editors
 
         private void OneName_TextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            if(_propertyName == nameof(MSEntity.Name) && _undoAction != null)
+            if(_propertyName == nameof(MSObject.Name) && _undoAction != null)
             {
                 // Get the rename action
                 Action redoAction = GetRenameAction();
 
                 // Add the undo redo action
-                Project.UndoRedo.Add(new UndoRedoAction(_undoAction, redoAction, "Renamed game entities"));
+                Project.UndoRedo.Add(new UndoRedoAction(_undoAction, redoAction, "Renamed Grievances"));
 
                 // Set property name to null
                 _propertyName = null;
@@ -107,14 +107,14 @@ namespace RevengineEditor.Editors
             Action undoAction = GetIsEnabledAction();
 
             // Get the view model and set a current IsEnabled
-            MSEntity viewModel = DataContext as MSEntity;
+            MSObject viewModel = DataContext as MSObject;
             viewModel.IsEnabled = (sender as CheckBox).IsChecked == true;
 
             // Get a redo action
             Action redoAction = GetIsEnabledAction();
 
             // Add the UndoRedo actions
-            Project.UndoRedo.Add(new UndoRedoAction(undoAction, redoAction, viewModel.IsEnabled == true ? "Enabled game entities" : "Disabled game entities"));
+            Project.UndoRedo.Add(new UndoRedoAction(undoAction, redoAction, viewModel.IsEnabled == true ? "Enabled Grievances" : "Disabled Grievances"));
         }
     }
 }

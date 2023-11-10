@@ -14,9 +14,9 @@ namespace RevengineEditor.Components
     internal abstract class Motivator : ViewModelBase
     {
         [DataMember]
-        public GameEntity Owner { get; private set; }
+        public Grievance Owner { get; private set; }
 
-        public Motivator(GameEntity owner)
+        public Motivator(Grievance owner)
         {
             Debug.Assert(owner != null);
             Owner = owner;

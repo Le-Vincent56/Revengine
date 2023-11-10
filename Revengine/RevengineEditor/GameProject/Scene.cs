@@ -46,12 +46,12 @@ namespace RevengineEditor.GameProject
             }
         }
 
-        [DataMember(Name = nameof(GameEntities))]
-        private readonly ObservableCollection<GameEntity> _gameEntities = new ObservableCollection<GameEntity>();
-        public ReadOnlyObservableCollection<GameEntity> GameEntities { get; private set; }
+        [DataMember(Name = nameof(Grievances))]
+        private readonly ObservableCollection<Grievance> _grievances = new ObservableCollection<Grievance>();
+        public ReadOnlyObservableCollection<Grievance> Grievances { get; private set; }
 
-        public ICommand AddGameEntityCommand { get; private set; }
-        public ICommand RemoveGameEntityCommand { get; private set; }
+        public ICommand AddGrievanceCommand { get; private set; }
+        public ICommand RemoveGrievanceCommand { get; private set; }
 
         public Scene(string name, Project project)
         {
@@ -64,23 +64,23 @@ namespace RevengineEditor.GameProject
         }
 
         /// <summary>
-        /// Add a Game Entity to the Scene
+        /// Add a Grievance to the Scene
         /// </summary>
-        /// <param name="entity">The Game Entity to add</param>
-        private void AddGameEntity(GameEntity entity)
+        /// <param name="grievance">The Grievance to add</param>
+        private void AddGrievance(Grievance grievance)
         {
-            Debug.Assert(!_gameEntities.Contains(entity));
-            _gameEntities.Add(entity);
+            Debug.Assert(!_grievances.Contains(grievance));
+            _grievances.Add(grievance);
         }
 
         /// <summary>
-        /// Remove a Game Entity from the Scene
+        /// Remove a Grievance from the Scene
         /// </summary>
-        /// <param name="entity">The Game Entity to remove</param>
-        private void RemoveGameEntity(GameEntity entity)
+        /// <param name="grievance">The Grievance to remove</param>
+        private void RemoveGrievance(Grievance grievance)
         {
-            Debug.Assert(_gameEntities.Contains(entity));
-            _gameEntities.Remove(entity);
+            Debug.Assert(_grievances.Contains(grievance));
+            _grievances.Remove(grievance);
         }
 
         /// <summary>
@@ -91,41 +91,41 @@ namespace RevengineEditor.GameProject
         private void OnDeserialized(StreamingContext context)
         {
             // Construct scenes if there are scenes
-            if (_gameEntities != null)
+            if (_grievances != null)
             {
-                GameEntities = new ReadOnlyObservableCollection<GameEntity>(_gameEntities);
-                OnPropertyChanged(nameof(GameEntities));
+                Grievances = new ReadOnlyObservableCollection<Grievance>(_grievances);
+                OnPropertyChanged(nameof(Grievances));
             }
 
-            // Initialize Add Game Entity Command
-            AddGameEntityCommand = new RelayCommand<GameEntity>(x =>
+            // Initialize Add Grievance Command
+            AddGrievanceCommand = new RelayCommand<Grievance>(x =>
             {
                 // Add the scene
-                AddGameEntity(x);
+                AddGrievance(x);
 
                 // Remember the index
-                int entityIndex = _gameEntities.Count - 1;
+                int grievanceIndex = _grievances.Count - 1;
 
                 // Add the Add Scene Undo and Redo commands
                 Project.UndoRedo.Add(new UndoRedoAction(
-                    () => RemoveGameEntity(x),
-                    () => _gameEntities.Insert(entityIndex, x),
+                    () => RemoveGrievance(x),
+                    () => _grievances.Insert(grievanceIndex, x),
                     $"Add {x.Name} to {Name}"));
             });
 
-            // Initialize Remove Game Entity Command
-            RemoveGameEntityCommand = new RelayCommand<GameEntity>(x =>
+            // Initialize Remove Grievance Command
+            RemoveGrievanceCommand = new RelayCommand<Grievance>(x =>
             {
                 // Get the scene index of the scene to remove
-                int gameEntityIndex = _gameEntities.IndexOf(x);
+                int grievanceIndex = _grievances.IndexOf(x);
 
                 // Remove the scene
-                RemoveGameEntity(x);
+                RemoveGrievance(x);
 
                 // Add the Remove Scene Undo and Redo commands
                 Project.UndoRedo.Add(new UndoRedoAction(
-                    () => _gameEntities.Insert(gameEntityIndex, x),
-                    () => RemoveGameEntity(x),
+                    () => _grievances.Insert(grievanceIndex, x),
+                    () => RemoveGrievance(x),
                     $"Removed {x.Name} from {Name}"));
             });
         }

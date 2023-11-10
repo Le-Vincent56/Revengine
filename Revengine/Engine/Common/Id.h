@@ -2,8 +2,8 @@
 #include "CommonHeaders.h"
 
 namespace revengine::id {
-	// Revengine uses a generation/index system to reference certain ids - these will help us lookup an entity or motivator within
-	// their respective arrays easily. Generations are used to distinguish entities created at the same index slot, and will take
+	// Revengine uses a generation/index system to reference certain ids - these will help us lookup a Grievance or Motivator within
+	// their respective arrays easily. Generations are used to distinguish Grievances created at the same index slot, and will take
 	// up the first 8 bits, meaning that our 30 bits are split into 22 index bits and 8 generation bits, which is a minimum of 
 	// 4 million simultaneous entries. We can only, however, distinguish between 256 entries created in the same slot.
 

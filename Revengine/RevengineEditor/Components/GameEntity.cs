@@ -14,7 +14,7 @@ namespace RevengineEditor.Components
 {
     [DataContract]
     [KnownType(typeof(Transform))]
-    internal class GameEntity : ViewModelBase
+    internal class Grievance : ViewModelBase
     {
         private string _name;
         [DataMember]
@@ -53,7 +53,7 @@ namespace RevengineEditor.Components
         private readonly ObservableCollection<Motivator> _motivators = new ObservableCollection<Motivator>();
         public ReadOnlyObservableCollection<Motivator> Motivators { get; private set; }
 
-        public GameEntity(Scene scene)
+        public Grievance(Scene scene)
         {
             Debug.Assert(scene != null);
             ParentScene = scene;
@@ -73,7 +73,7 @@ namespace RevengineEditor.Components
         }
     }
 
-    internal abstract class MSEntity : ViewModelBase
+    internal abstract class MSObject : ViewModelBase
     {
         private bool _updatesEnabled = true;
         private string _name;
@@ -104,30 +104,30 @@ namespace RevengineEditor.Components
             }
         }
         public ReadOnlyObservableCollection<IMSMotivator> Motivators { get; private set; }
-        public List<GameEntity> SelectedEntities { get; }
+        public List<Grievance> SelectedGrievances { get; }
 
-        public MSEntity(List<GameEntity> entities)
+        public MSObject(List<Grievance> grievances)
         {
-            Debug.Assert(entities?.Any() == true);
+            Debug.Assert(grievances?.Any() == true);
             Motivators = new ReadOnlyObservableCollection<IMSMotivator>(_motivators);
-            SelectedEntities = entities;
+            SelectedGrievances = grievances;
             PropertyChanged += (s, e) =>
             {
                 if(_updatesEnabled)
-                    UpdateGameEntities(e.PropertyName);
+                    UpdateGrievances(e.PropertyName);
             };
 
         }
 
-        public static float? GetMixedValue(List<GameEntity> entities, Func<GameEntity, float> getProperty)
+        public static float? GetMixedValue(List<Grievance> grievances, Func<Grievance, float> getProperty)
         {
-            float value = getProperty(entities.First());
+            float value = getProperty(grievances.First());
 
-            // If we find an Entity with a non-uniform value, return null
-            foreach (GameEntity entity in entities.Skip(1))
+            // If we find a Grievance with a non-uniform value, return null
+            foreach (Grievance grievance in grievances.Skip(1))
             {
                 // Use custom comparison method for precision
-                if (value.IsTheSameAs(getProperty(entity)))
+                if (value.IsTheSameAs(getProperty(grievance)))
                 {
                     return null;
                 }
@@ -137,15 +137,15 @@ namespace RevengineEditor.Components
             return value;
         }
 
-        public static bool? GetMixedValue(List<GameEntity> entities, Func<GameEntity, bool> getProperty)
+        public static bool? GetMixedValue(List<Grievance> grievances, Func<Grievance, bool> getProperty)
         {
-            bool value = getProperty(entities.First());
+            bool value = getProperty(grievances.First());
 
-            // If we find an Entity with a non-uniform value, return null
-            foreach (GameEntity entity in entities.Skip(1))
+            // If we find a Grievance with a non-uniform value, return null
+            foreach (Grievance grievance in grievances.Skip(1))
             {
                 // Use custom comparison method for precision
-                if (value != getProperty(entity))
+                if (value != getProperty(grievance))
                 {
                     return null;
                 }
@@ -155,15 +155,15 @@ namespace RevengineEditor.Components
             return value;
         }
 
-        public static string GetMixedValue(List<GameEntity> entities, Func<GameEntity, string> getProperty)
+        public static string GetMixedValue(List<Grievance> grievances, Func<Grievance, string> getProperty)
         {
-            string value = getProperty(entities.First());
+            string value = getProperty(grievances.First());
 
-            // If we find an Entity with a non-uniform value, return null
-            foreach (GameEntity entity in entities.Skip(1))
+            // If we find an Grievance with a non-uniform value, return null
+            foreach (Grievance grievance in grievances.Skip(1))
             {
                 // Use custom comparison method for precision
-                if (value != getProperty(entity))
+                if (value != getProperty(grievance))
                 {
                     return null;
                 }
@@ -174,35 +174,35 @@ namespace RevengineEditor.Components
         }
 
         /// <summary>
-        /// Refresh and update the selected game entities
+        /// Refresh and update the selected Grievances
         /// </summary>
         public void Refresh()
         {
             // Disable updates
             _updatesEnabled = false;
 
-            // Update entities
-            UpdateMSGameEntity();
+            // Update grievances
+            UpdateMSGrievance();
 
             // Enable updates
             _updatesEnabled = true;
         }
 
         /// <summary>
-        /// Update the values of each selected Game Entity
+        /// Update the values of each selected Grievance
         /// </summary>
         /// <param name="propertyName">The property to update</param>
         /// <returns>True if the property updates, false if not</returns>
-        protected virtual bool UpdateGameEntities(string propertyName)
+        protected virtual bool UpdateGrievances(string propertyName)
         {
             switch (propertyName)
             {
                 case nameof(IsEnabled):
-                    SelectedEntities.ForEach(x => x.IsEnabled = IsEnabled.Value);
+                    SelectedGrievances.ForEach(x => x.IsEnabled = IsEnabled.Value);
                     return true;
 
                 case nameof(Name):
-                    SelectedEntities.ForEach(x => x.Name = Name);
+                    SelectedGrievances.ForEach(x => x.Name = Name);
                     return true;
             }
 
@@ -210,23 +210,23 @@ namespace RevengineEditor.Components
         }
 
         /// <summary>
-        /// Update the multiselected game entity
+        /// Update the multiselected Grievance
         /// </summary>
         /// <returns>True if updated completed</returns>
-        protected virtual bool UpdateMSGameEntity()
+        protected virtual bool UpdateMSGrievance()
         {
-            IsEnabled = GetMixedValue(SelectedEntities, new Func<GameEntity, bool>(x => x.IsEnabled));
-            Name = GetMixedValue(SelectedEntities, new Func<GameEntity, string>(x => x.Name));
+            IsEnabled = GetMixedValue(SelectedGrievances, new Func<Grievance, bool>(x => x.IsEnabled));
+            Name = GetMixedValue(SelectedGrievances, new Func<Grievance, string>(x => x.Name));
 
             return true;
         }
     }
 
-    internal class MSGameEntity : MSEntity
+    internal class MSGrievance : MSObject
     {
-        public MSGameEntity(List<GameEntity> entities) : base(entities)
+        public MSGrievance(List<Grievance> grievances) : base(grievances)
         {
-            // Get all the selected data from the selected entities
+            // Get all the selected data from the selected Grievances
             Refresh();
         }
     }

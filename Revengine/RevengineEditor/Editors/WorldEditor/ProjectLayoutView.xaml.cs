@@ -28,21 +28,21 @@ namespace RevengineEditor.Editors
             InitializeComponent();
         }
 
-        private void OnAddGameEntity_Button_Click(object sender, RoutedEventArgs e)
+        private void OnAddGrievance_Button_Click(object sender, RoutedEventArgs e)
         {
             Button button = sender as Button;
             Scene viewModel = button.DataContext as Scene;
-            viewModel.AddGameEntityCommand.Execute(new GameEntity(viewModel) { Name = "Empty Game Entity"});
+            viewModel.AddGrievanceCommand.Execute(new Grievance(viewModel) { Name = "Empty Grievance"});
         }
 
-        private void OnGameEntities_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void OnGrievances_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Retrieve the listBox
             ListBox listBox = sender as ListBox;
 
-            // Cast the new selection to a list of GameEntities
-            List<GameEntity> newSelection = listBox.SelectedItems.Cast<GameEntity>().ToList();
-            List<GameEntity> previousSelection = newSelection.Except(e.AddedItems.Cast<GameEntity>()).Concat(e.RemovedItems.Cast<GameEntity>()).ToList();
+            // Cast the new selection to a list of Grievances
+            List<Grievance> newSelection = listBox.SelectedItems.Cast<Grievance>().ToList();
+            List<Grievance> previousSelection = newSelection.Except(e.AddedItems.Cast<Grievance>()).Concat(e.RemovedItems.Cast<Grievance>()).ToList();
 
             // Assign Undo/Redo actions
             Project.UndoRedo.Add(new UndoRedoAction(
@@ -59,12 +59,12 @@ namespace RevengineEditor.Editors
                 "Selection changed"
                 ));
 
-            MSGameEntity msEntity = null;
+            MSGrievance msGrievance = null;
             if(newSelection.Any())
             {
-                msEntity = new MSGameEntity(newSelection);
+                msGrievance = new MSGrievance(newSelection);
             }
-            GameEntityView.Instance.DataContext = msEntity;
+            GrievancesView.Instance.DataContext = msGrievance;
         }
     }
 }
