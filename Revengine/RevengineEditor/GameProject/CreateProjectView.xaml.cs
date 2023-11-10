@@ -38,16 +38,24 @@ namespace RevengineEditor.GameProject
             // Create a new project using the selected template as the project template
             string projectPath = viewModel.CreateNewProject(templateListBox.SelectedItem as ProjectTemplate);
 
+            // Retrieve the window
+            Window window = Window.GetWindow(this);
+
             // Check the dialog result
             bool dialogResult = false;
             if(!string.IsNullOrEmpty(projectPath))
             {
                 // IF the string is valid, then the dialog result is true
                 dialogResult = true;
+
+                // Open the project
+                Project project = OpenProject.Open(new ProjectData() { ProjectName = viewModel.ProjectName, ProjectPath = projectPath });
+
+                // Set the DataContext to the project to be able to get it in the Main Window
+                window.DataContext = project;
             }
 
             // SEt the dialog result to this Window and close it
-            Window window = Window.GetWindow(this);
             window.DialogResult = dialogResult;
             window.Close();
         }

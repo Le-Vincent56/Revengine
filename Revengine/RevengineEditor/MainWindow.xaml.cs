@@ -1,6 +1,7 @@
 ﻿using RevengineEditor.GameProject;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ namespace RevengineEditor
         {
             InitializeComponent();
             Loaded += OnMainWindowLoaded;
+            Closing += OnMainWindowClosed;
         }
 
         private void OnMainWindowLoaded(object sender, RoutedEventArgs e)
@@ -33,16 +35,34 @@ namespace RevengineEditor
             OpenProjectBrowserDialog();
         }
 
+        private void OnMainWindowClosed(object sender, CancelEventArgs e)
+        {
+            Closing -= OnMainWindowClosed;
+
+            // Unload a project if necessary
+            Project.Current?.UnloadProject();
+        }
+
+        /// <summary>
+        /// Open the Project Browser Dialog
+        /// </summary>
         private void OpenProjectBrowserDialog()
         {
             ProjectBrowserDialog projectBrowser = new ProjectBrowserDialog();
-            if (projectBrowser.ShowDialog() == false)
+
+            // Check if the projectBrowser should be shown, or if the DataContext is null
+            if (projectBrowser.ShowDialog() == false || projectBrowser.DataContext == null)
             {
+                // If not, then shut down
                 Application.Current.Shutdown();
             }
             else
             {
+                // Unload a loaded project if it exists
+                Project.Current?.UnloadProject();
 
+                // Set the current DatContext to the projectBrowser DataContext
+                DataContext = projectBrowser.DataContext;
             }
         }
     }
