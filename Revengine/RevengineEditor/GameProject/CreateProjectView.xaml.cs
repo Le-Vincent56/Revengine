@@ -55,7 +55,7 @@ namespace RevengineEditor.GameProject
                 window.DataContext = project;
             }
 
-            // SEt the dialog result to this Window and close it
+            // Set the dialog result to this Window and close it
             window.DialogResult = dialogResult;
             window.Close();
         }
