@@ -37,17 +37,8 @@ namespace RevengineEditor.Editors
 
         private void OnGameEntities_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            GameEntityView.Instance.DataContext = null;
-
             // Retrieve the listBox
             ListBox listBox = sender as ListBox;
-
-            // Check if any new items have been added to the selection
-            if (e.AddedItems.Count > 0)
-            {
-                // If there are new items, set the data context to the first item
-                GameEntityView.Instance.DataContext = listBox.SelectedItems[0];
-            }
 
             // Cast the new selection to a list of GameEntities
             List<GameEntity> newSelection = listBox.SelectedItems.Cast<GameEntity>().ToList();
@@ -68,6 +59,12 @@ namespace RevengineEditor.Editors
                 "Selection changed"
                 ));
 
+            MSGameEntity msEntity = null;
+            if(newSelection.Any())
+            {
+                msEntity = new MSGameEntity(newSelection);
+            }
+            GameEntityView.Instance.DataContext = msEntity;
         }
     }
 }

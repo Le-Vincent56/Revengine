@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace RevengineEditor.Components
 {
+    internal interface IMSMotivator { }
+
     [DataContract]
-    public class Motivator : ViewModelBase
+    internal abstract class Motivator : ViewModelBase
     {
         [DataMember]
         public GameEntity Owner { get; private set; }
@@ -19,5 +21,10 @@ namespace RevengineEditor.Components
             Debug.Assert(owner != null);
             Owner = owner;
         }
+    }
+
+    abstract class MSMotivator<T> : ViewModelBase, IMSMotivator where T : Motivator
+    {
+
     }
 }

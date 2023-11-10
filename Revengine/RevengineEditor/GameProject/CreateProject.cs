@@ -128,7 +128,8 @@ namespace RevengineEditor.GameProject
             {
                 // Notify exceptions
                 Debug.WriteLine(ex.Message);
-                // TODO: Log error
+
+                Logger.Log(MessageType.Error, $"Failed to read project templates");
             }
 
         }
@@ -231,7 +232,9 @@ namespace RevengineEditor.GameProject
             {
                 // Notify exceptions
                 Debug.WriteLine(ex.Message);
-                // TODO: Log error
+
+                // Log error
+                Logger.Log(MessageType.Error, $"Failed to create {ProjectName}");
 
                 return string.Empty;
             }

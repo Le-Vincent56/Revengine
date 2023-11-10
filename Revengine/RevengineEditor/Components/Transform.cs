@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace RevengineEditor.Components
 {
     [DataContract]
-    public class Transform : Motivator
+    internal class Transform : Motivator
     {
         private Vector3 _position;
         [DataMember]

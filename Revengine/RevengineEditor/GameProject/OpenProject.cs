@@ -9,11 +9,12 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace RevengineEditor.GameProject
 {
     [DataContract]
-    public class ProjectData
+    internal class ProjectData
     {
         [DataMember]
         public string ProjectName { get; set; }
@@ -27,13 +28,13 @@ namespace RevengineEditor.GameProject
     }
 
     [DataContract]
-    public class ProjectDataList
+    internal class ProjectDataList
     {
         [DataMember]
         public List<ProjectData> Projects { get; set; }
     }
 
-    public class OpenProject : ViewModelBase
+    internal class OpenProject : ViewModelBase
     {
         private static readonly string _applicationDataPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\RevengineEditor\";
         private static readonly string _projectDataPath;
@@ -60,7 +61,9 @@ namespace RevengineEditor.GameProject
             } catch(Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                // TODO: log errors
+
+                // Log error
+                Logger.Log(MessageType.Error, $"Failed to read project data");
             }
         }
 

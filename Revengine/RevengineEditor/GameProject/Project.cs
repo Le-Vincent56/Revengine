@@ -14,7 +14,7 @@ using System.Windows.Input;
 namespace RevengineEditor.GameProject
 {
     [DataContract(Name = "Game")]
-    public class Project : ViewModelBase
+    internal class Project : ViewModelBase
     {
         public static string Extension { get; } = ".revengine";
 
@@ -97,6 +97,7 @@ namespace RevengineEditor.GameProject
         public static void Save(Project project)
         {
             Serializer.ToFile(project, project.FullPath);
+            Logger.Log(MessageType.Info, $"{project.Name} saved to {project.FullPath}");
         }
 
         /// <summary>
@@ -155,7 +156,8 @@ namespace RevengineEditor.GameProject
 
         public void UnloadProject()
         {
-
+            // Reset the UndoRedo class, as they are no longer relevant
+            UndoRedo.Reset();
         }
     }
 }

@@ -27,7 +27,11 @@ namespace RevengineEditor.Utilities
             catch(Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                // TODO: Log Error
+
+                // Log error
+                Logger.Log(MessageType.Error, $"Failed to serialize {instance} to {path}");
+
+                throw;
             }
         }
 
@@ -50,10 +54,11 @@ namespace RevengineEditor.Utilities
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                // TODO: Log Error
 
-                // Return a default value of T
-                return default(T);
+                // Log error
+                Logger.Log(MessageType.Error, $"Failed to deserialize {path}");
+
+                throw;
             }
         }
     }

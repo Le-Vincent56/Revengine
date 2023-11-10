@@ -11,7 +11,7 @@ using System.Windows.Input;
 namespace RevengineEditor.GameProject
 {
     [DataContract]
-    public class Scene : ViewModelBase
+    internal class Scene : ViewModelBase
     {
         private string _name;
         private bool _isActive;
