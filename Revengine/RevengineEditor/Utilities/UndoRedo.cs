@@ -28,13 +28,20 @@ namespace RevengineEditor.Utilities
             Name = name;
         }
 
-        public UndoRedoAction(Action undo, Action redo, string name)
+        public UndoRedoAction(Action undo, Action redo, string name) : this(name)
         {
             Debug.Assert(undo != null && redo != null);
             _undoAction = undo;
             _redoAction = redo;
             Name = name;
         }
+
+        public UndoRedoAction(string property, object instance, object undoValue, object redoValue, string name)
+            : this(
+                  () => instance.GetType().GetProperty(property).SetValue(instance, undoValue),
+                  () => instance.GetType().GetProperty(property).SetValue(instance, redoValue),
+                  name)
+        { }
 
         public void Undo() => _undoAction();
 
@@ -43,6 +50,7 @@ namespace RevengineEditor.Utilities
 
     public class UndoRedo
     {
+        private bool _enableAdd = true;
         private readonly ObservableCollection<IUndoRedo> _undoList = new ObservableCollection<IUndoRedo>();
         private readonly ObservableCollection<IUndoRedo> _redoList = new ObservableCollection<IUndoRedo>();
 
@@ -70,11 +78,14 @@ namespace RevengineEditor.Utilities
         /// <param name="cmd"></param>
         public void Add(IUndoRedo cmd)
         {
-            // Add the command to the undo list
-            _undoList.Add(cmd);
+            if (_enableAdd)
+            {
+                // Add the command to the undo list
+                _undoList.Add(cmd);
 
-            // Clear the redo list
-            _redoList.Clear();
+                // Clear the redo list
+                _redoList.Clear();
+            }
         }
 
         /// <summary>
@@ -90,8 +101,14 @@ namespace RevengineEditor.Utilities
                 // Remove it from the list
                 _undoList.RemoveAt(_undoList.Count - 1);
 
+                // Prevent any actions from being added
+                _enableAdd = false;
+
                 // Undo it
                 cmd.Undo();
+
+                // Allow actions to be added again
+                _enableAdd = true;
 
                 // Add it to the front of the redo list
                 _redoList.Insert(0, cmd);
@@ -111,8 +128,14 @@ namespace RevengineEditor.Utilities
                 // Remove it from the list
                 _redoList.RemoveAt(0);
 
+                // Prevent any actions from being added
+                _enableAdd = false;
+
                 // Redo it
                 cmd.Redo();
+
+                // Allow actions to be added again
+                _enableAdd = true;
 
                 // Add it to the end of the undo list
                 _undoList.Add(cmd);
