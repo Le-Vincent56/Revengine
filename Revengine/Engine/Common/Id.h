@@ -67,4 +67,26 @@ namespace revengine::id {
 		// Get the new generation and shift it back to it's original place
 		return index(id) | (generation << index_bits);
 	}
-}
+
+#if _DEBUG
+	namespace internal {
+		struct id_base {
+			constexpr explicit id_base(id_type id) : _id{ id } {}
+			constexpr operator id_type() const { return _id; }
+
+		private:
+			id_type _id;
+		};
+	}
+
+	// Define named types that can be used as distinctions between IDs
+#define DEFINE_TYPED_ID(name)											\
+		struct name final : id::internal::id_base {						\
+			constexpr explicit name(id::id_type id)						\
+				: id_base{ id } {}										\
+			constexpr name() : id_base { id::id_mask } {}				\
+		};
+	}
+#else
+#define DEFINE_TYPED_ID(name) using name = id::id_type;
+#endif
