@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Revengine": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "nativeDebugging": true
     }
   }
 }

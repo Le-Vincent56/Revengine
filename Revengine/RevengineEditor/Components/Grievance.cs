@@ -1,4 +1,5 @@
-﻿using RevengineEditor.GameProject;
+﻿using RevengineEditor.DLLWrappers;
+using RevengineEditor.GameProject;
 using RevengineEditor.Utilities;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,40 @@ namespace RevengineEditor.Components
     [KnownType(typeof(Transform))]
     internal class Grievance : ViewModelBase
     {
+        private int _grievanceId = ID.INVALID_ID;
+        public int GrievanceID
+        {
+            get { return _grievanceId; }
+            set
+            {
+                if(_grievanceId != value)
+                {
+                    _grievanceId = value;
+                    OnPropertyChanged(nameof(GrievanceID));
+                }
+            }
+        }
+        private bool _isActive;
+        public bool IsActive
+        {
+            get { return _isActive; }
+            set
+            {
+                if (_isActive != value)
+                {
+                    _isActive = value;
+                    if(_isActive)
+                    {
+                        GrievanceID = EngineAPI.CreateGrievance(this);
+                        Debug.Assert(ID.Isvalid(_grievanceId));
+                    } else
+                    {
+                        EngineAPI.RemoveGrievance(this);
+                    }
+                    OnPropertyChanged(nameof(IsActive));
+                }
+            }
+        }
         private string _name;
         [DataMember]
         public string Name
@@ -70,6 +105,26 @@ namespace RevengineEditor.Components
                 Motivators = new ReadOnlyObservableCollection<Motivator>(_motivators);
                 OnPropertyChanged(nameof(Motivators));
             }
+        }
+
+        /// <summary>
+        /// Get a Motivator of a certain Type in the Grievance
+        /// </summary>
+        /// <param name="type">The Type of Motivator to retrieve</param>
+        /// <returns>A Motivator of the asked Type, null if it doesn't exist</returns>
+        public Motivator GetMotivator(Type type)
+        {
+            return Motivators.FirstOrDefault(m => m.GetType() == type);
+        }
+
+        /// <summary>
+        /// Get a Motivator of a certain Type and automatically cast it
+        /// </summary>
+        /// <typeparam name="T">The Type of Motivator to retreive and cast to</typeparam>
+        /// <returns>A Motivator of Type T, null if it doesn't exist</returns>
+        public T GetMotivator<T>() where T : Motivator
+        {
+            return GetMotivator(typeof(T)) as T;
         }
     }
 

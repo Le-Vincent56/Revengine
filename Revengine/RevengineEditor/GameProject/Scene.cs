@@ -67,10 +67,24 @@ namespace RevengineEditor.GameProject
         /// Add a Grievance to the Scene
         /// </summary>
         /// <param name="grievance">The Grievance to add</param>
-        private void AddGrievance(Grievance grievance)
+        private void AddGrievance(Grievance grievance, int index = -1)
         {
             Debug.Assert(!_grievances.Contains(grievance));
-            _grievances.Add(grievance);
+
+            // Set the Grievance to Active if the Scene is Active
+            grievance.IsActive = IsActive;
+
+            // Check if an index is given
+            if(index == -1)
+            {
+                // If not, add the Grievance to the end of the collection of Grievances
+                _grievances.Add(grievance);
+            } else
+            {
+                // Otherwise, insert the Grievance into the collection of Grievances
+                // at the given index
+                _grievances.Insert(index, grievance);
+            }
         }
 
         /// <summary>
@@ -80,6 +94,11 @@ namespace RevengineEditor.GameProject
         private void RemoveGrievance(Grievance grievance)
         {
             Debug.Assert(_grievances.Contains(grievance));
+
+            // Deactivate the Grievance
+            grievance.IsActive = false;
+
+            // Remove the Grievance from the collection
             _grievances.Remove(grievance);
         }
 
@@ -97,6 +116,12 @@ namespace RevengineEditor.GameProject
                 OnPropertyChanged(nameof(Grievances));
             }
 
+            // Activate all Grievances so they can load into the engine
+            foreach(Grievance grievance in _grievances)
+            {
+                grievance.IsActive = true;
+            }
+
             // Initialize Add Grievance Command
             AddGrievanceCommand = new RelayCommand<Grievance>(x =>
             {
@@ -109,7 +134,7 @@ namespace RevengineEditor.GameProject
                 // Add the Add Scene Undo and Redo commands
                 Project.UndoRedo.Add(new UndoRedoAction(
                     () => RemoveGrievance(x),
-                    () => _grievances.Insert(grievanceIndex, x),
+                    () => AddGrievance(x, grievanceIndex),
                     $"Add {x.Name} to {Name}"));
             });
 
@@ -124,7 +149,7 @@ namespace RevengineEditor.GameProject
 
                 // Add the Remove Scene Undo and Redo commands
                 Project.UndoRedo.Add(new UndoRedoAction(
-                    () => _grievances.Insert(grievanceIndex, x),
+                    () => AddGrievance(x, grievanceIndex),
                     () => RemoveGrievance(x),
                     $"Removed {x.Name} from {Name}"));
             });
