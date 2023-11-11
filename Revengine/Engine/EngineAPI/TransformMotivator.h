@@ -1,0 +1,20 @@
+#pragma once
+#include "..\Components\ComponentsCommon.h"
+
+namespace revengine::transform {
+	DEFINE_TYPED_ID(transform_id);
+
+	class motivator final {
+	public:
+		constexpr explicit motivator(transform_id id) : _id{ id } {}
+		constexpr motivator() : _id{ id::invalid_id } {}
+		constexpr transform_id get_id() const { return _id; }
+		constexpr bool is_valid() const { return id::is_valid(_id); }
+
+		math::v3 position() const;
+		math::v4 rotation() const;
+		math::v3 scale() const;
+	private:
+		transform_id _id;
+	};
+}

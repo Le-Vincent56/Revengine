@@ -13,8 +13,8 @@ namespace revengine {
 			transform::init_info* transform{ nullptr };
 		};
 
-		grievance_id create_grievance(const grievance_info& info);
-		void remove_grievance(grievance_id id);
-		bool is_alive(grievance_id id);
+		grievance create_grievance(const grievance_info& info);
+		void remove_grievance(grievance g);
+		bool is_alive(grievance g);
 	}
 }
