@@ -62,6 +62,7 @@ namespace revengine::id {
 	/// <summary>
 	/// Increment the generation
 	/// </summary>
+	/// 
 	/// <param name="id">The ID of whose generation to increment</param>
 	/// <returns>The ID with an incremented generation</returns>
 	constexpr id_type new_generation(id_type id) {

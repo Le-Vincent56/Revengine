@@ -18,10 +18,13 @@
     <ClInclude Include="Components\Grievance.h" />
     <ClInclude Include="Components\Transform.h" />
     <ClInclude Include="EngineAPI\Grievance.h" />
+    <ClInclude Include="EngineAPI\TransformMotivator.h" />
+    <ClInclude Include="Utilities\MathTypes.h" />
     <ClInclude Include="Utilities\Utilities.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\Grievance.cpp" />
+    <ClCompile Include="Components\Transform.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
