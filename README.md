@@ -16,5 +16,10 @@ public string Name;   // Property
 C++ Functions/Methods will use lowerCamelCase, but separate the would-be Uppercase letters with "_" (underscores). This is because the underscore separator, I find, makes the code easier to read, especially for longer functions that might have similar names. It will also help separate them from the C# functions/methods written for WPF, which use the typical UpperCamelCase naming convention. For instance:
 ```
 grievance create_grievance(grievance_descriptor* g) { }  // C++
-Grievance CreateGrievance(grievanceDescriptor* g) { }     // C#
+Grievance CreateGrievance(grievanceDescriptor* g) { }    // C#
 ```
+
+## Terminology
+The Revengine uses a basic Project-Scene-GameObject-Component hierarchy, but uses some different terminology to fit with the name. Here's some equivalencies from Unity to the Revengine:
+* GameObject -> Grievance
+* Component -> Motivator
