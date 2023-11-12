@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:RevengineEditor"
         xmlns:editors="clr-namespace:RevengineEditor.Editors"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Title="Revengine Editor" Height="720" Width="1280">
+        Title="Revengine Editor" Height="720" Width="1280"
+        Style="{StaticResource RevengineWindowStyle}">
     <Grid>
         <editors:WorldEditorView/>
     </Grid>
