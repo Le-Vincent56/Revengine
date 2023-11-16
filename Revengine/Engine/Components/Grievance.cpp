@@ -46,6 +46,7 @@ namespace revengine::grievance {
 			//		- the number of memory allocations stay low, don't need
 			//		  to resize by 1 every time
 			transforms.emplace_back();
+			scripts.emplace_back();
 		}
 
 		// Assign the ID to the new grievance
@@ -88,6 +89,12 @@ namespace revengine::grievance {
 
 		// Put a default component in that slot
 		transforms[index] = {};
+
+		// Remove scripts
+		if (scripts[index].is_valid()) {
+			script::remove(scripts[index]);
+			scripts[index] = {};
+		}
 
 		// Push back the ID
 		free_ids.push_back(id);

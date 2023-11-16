@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RevengineEditor
 {
@@ -22,6 +22,8 @@ namespace RevengineEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static string RevenginePath { get; private set; } = @"C:\Users\levin\source\repos\Revengine\Revengine";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -32,6 +34,7 @@ namespace RevengineEditor
         private void OnMainWindowLoaded(object sender, RoutedEventArgs e)
         {
             Loaded -= OnMainWindowLoaded;
+            GetEnginePath();
             OpenProjectBrowserDialog();
         }
 
@@ -41,6 +44,33 @@ namespace RevengineEditor
 
             // Unload a project if necessary
             Project.Current?.UnloadProject();
+        }
+
+        /// <summary>
+        /// Get the local path of the Engine
+        /// </summary>
+        private void GetEnginePath()
+        {
+            // Check if the Environment variable is set
+            string? revenginePath = Environment.GetEnvironmentVariable("REVENGINE_ENGINE", EnvironmentVariableTarget.User);
+            if (revenginePath == null || !Directory.Exists(Path.Combine(revenginePath, @"Engine\EngineAPI")))
+            {
+                EnginePathDialog dialog = new EnginePathDialog();
+                if(dialog.ShowDialog() == true)
+                {
+                    // Set the path and environmen variables
+                    RevenginePath = dialog.RevenginePath;
+                    Environment.SetEnvironmentVariable("REVENGINE_ENGINE", RevenginePath.ToUpper(), EnvironmentVariableTarget.User);
+                } else
+                {
+                    // Shutdown
+                    Application.Current.Shutdown();
+                }
+            } else
+            {
+                // Set the path
+                RevenginePath = revenginePath;
+            }
         }
 
         /// <summary>

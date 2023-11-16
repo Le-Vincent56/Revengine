@@ -9,13 +9,13 @@ namespace revengine::script {
 		utl::vector<id::generation_type> generations;
 		utl::vector<script_id> free_ids;
 
-		using script_registery = std::unordered_map<size_t, detail::script_creator>;
+		using script_registry = std::unordered_map<size_t, detail::script_creator>;
 
-		script_registery& registery() {
+		script_registry& registry() {
 			// This is a static variable because of the initialization order
 			// of static data - this way, we can be certain that the data is initialized
 			// before accessing it
-			static script_registery reg;
+			static script_registry reg;
 			return reg;
 		}
 
@@ -41,7 +41,7 @@ namespace revengine::script {
 		u8 register_script(size_t tag, script_creator func) {
 			// Get the registery and add a new pair (tag, func), which returns a pair in which the second
 			// member variable is a boolean that states if the insertion succeeded or failed
-			bool result{ registery().insert(script_registery::value_type{tag, func}).second };
+			bool result{ registry().insert(script_registry::value_type{tag, func}).second };
 			assert(result);
 			return result;
 		}
@@ -84,7 +84,7 @@ namespace revengine::script {
 
 		// Get the position where the script was added (end of the grievance_scripts array)
 		// so that we can point to it in the id_mapping array
-		const id::id_type index{ (id::id_type)grievance_scripts.size() };
+		const id::id_type index{ (id::id_type)grievance_scripts.size() - 1 };
 		id_mapping[id::index(id)] = index;
 
 		return motivator{ id };

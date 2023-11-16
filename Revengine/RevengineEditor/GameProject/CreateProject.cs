@@ -26,6 +26,7 @@ namespace RevengineEditor.GameProject
         public string IconFilePath { get; set; }
         public string ScreenshotFilePath { get; set; }
         public string ProjectFilePath { get; set; }
+        public string TemplatePath { get; set; }
     }
 
     public class CreateProject : ViewModelBase
@@ -116,6 +117,7 @@ namespace RevengineEditor.GameProject
                     template.ScreenshotFilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(templateFile), "Screenshot.png"));
                     template.Screenshot = File.ReadAllBytes(template.ScreenshotFilePath);
                     template.ProjectFilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(templateFile), template.ProjectFile));
+                    template.TemplatePath = Path.GetDirectoryName(templateFile);
 
                     // Add each template to the list
                     _projectTemplates.Add(template);
@@ -226,6 +228,9 @@ namespace RevengineEditor.GameProject
                 // Write the formatted file at the given project path
                 File.WriteAllText(projectPath, projectXML);
 
+                // Create the MSVC Solution
+                CreateMSVCSolution(template, path);
+
                 return path;
             }
             catch(Exception ex)
@@ -238,6 +243,44 @@ namespace RevengineEditor.GameProject
 
                 return string.Empty;
             }
+        }
+
+        private void CreateMSVCSolution(ProjectTemplate template, string projectPath)
+        {
+            Debug.Assert(File.Exists(Path.Combine(template.TemplatePath, "MSVCSolution")));
+            Debug.Assert(File.Exists(Path.Combine(template.TemplatePath, "MSVCProject")));
+
+            string engineAPIPath = Path.Combine(MainWindow.RevenginePath, @"Engine\EngineAPI\");
+            Debug.Assert(Directory.Exists(engineAPIPath));
+
+            // Project name parameter
+            string _0 = ProjectName;
+
+            // Project GUID parameter
+            string _1 = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+
+            // Solution GUID paramter
+            string _2s = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+
+            // Construct the string from the templates
+            string solution = File.ReadAllText(Path.Combine(template.TemplatePath, "MSVCSolution"));
+            solution = string.Format(solution, _0, _1, _2s);
+
+            // Write the text to a solution
+            File.WriteAllText(Path.GetFullPath(Path.Combine(projectPath, $"{_0}.sln")), solution);
+
+            // Include Path parameter
+            string _2p = engineAPIPath;
+            
+            // Additional Libraries parameter
+            string _3 = MainWindow.RevenginePath;
+
+            // Construct the string from the templates
+            string project = File.ReadAllText(Path.Combine(template.TemplatePath, "MSVCProject"));
+            project = string.Format(project, _0, _1, _2p, _3);
+
+            // Write the text to a project
+            File.WriteAllText(Path.GetFullPath(Path.Combine(projectPath, $@"GameCode\{_0}.vcxproj")), project);
         }
     }
 }
