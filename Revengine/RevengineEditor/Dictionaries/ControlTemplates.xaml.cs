@@ -87,13 +87,16 @@ namespace RevengineEditor.Dictionaries
         private void OnTextBoxRename_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
+
+            // If the textbox is not visible, do nothing
+            if (!textBox.IsVisible) return;
+
             BindingExpression exp = textBox.GetBindingExpression(TextBox.TextProperty);
 
             if(exp != null)
             {
                 // Update the binding and move the focus
                 exp.UpdateTarget();
-                textBox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Previous));
 
                 // Collapse the textbox
                 textBox.Visibility = Visibility.Collapsed;

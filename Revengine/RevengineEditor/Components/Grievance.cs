@@ -9,7 +9,9 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace RevengineEditor.Components
 {
@@ -43,9 +45,10 @@ namespace RevengineEditor.Components
                     {
                         GrievanceID = EngineAPI.CreateGrievance(this);
                         Debug.Assert(ID.Isvalid(_grievanceId));
-                    } else
+                    } else if(ID.Isvalid(GrievanceID))
                     {
                         EngineAPI.RemoveGrievance(this);
+                        GrievanceID = ID.INVALID_ID;
                     }
                     OnPropertyChanged(nameof(IsActive));
                 }
@@ -174,58 +177,33 @@ namespace RevengineEditor.Components
 
         }
 
-        public static float? GetMixedValue(List<Grievance> grievances, Func<Grievance, float> getProperty)
+        public T GetMSComponent<T>() where T : IMSMotivator
         {
-            float value = getProperty(grievances.First());
-
-            // If we find a Grievance with a non-uniform value, return null
-            foreach (Grievance grievance in grievances.Skip(1))
-            {
-                // Use custom comparison method for precision
-                if (value.IsTheSameAs(getProperty(grievance)))
-                {
-                    return null;
-                }
-            }
-
-            // Return the value
-            return value;
+            return (T)Motivators.FirstOrDefault(x => x.GetType() == typeof(T));
         }
 
-        public static bool? GetMixedValue(List<Grievance> grievances, Func<Grievance, bool> getProperty)
+        public static float? GetMixedValue<T>(List<T> objects, Func<T, float> getProperty)
         {
-            bool value = getProperty(grievances.First());
+            float value = getProperty(objects.First());
 
-            // If we find a Grievance with a non-uniform value, return null
-            foreach (Grievance grievance in grievances.Skip(1))
-            {
-                // Use custom comparison method for precision
-                if (value != getProperty(grievance))
-                {
-                    return null;
-                }
-            }
-
-            // Return the value
-            return value;
+            // If we find an object with a non-uniform value, return null, otherwise, return the value
+            return objects.Skip(1).Any(x => !getProperty(x).IsTheSameAs(value)) ? (float?)null : value;
         }
 
-        public static string GetMixedValue(List<Grievance> grievances, Func<Grievance, string> getProperty)
+        public static bool? GetMixedValue<T>(List<T> objects, Func<T, bool> getProperty)
         {
-            string value = getProperty(grievances.First());
+            bool value = getProperty(objects.First());
 
-            // If we find an Grievance with a non-uniform value, return null
-            foreach (Grievance grievance in grievances.Skip(1))
-            {
-                // Use custom comparison method for precision
-                if (value != getProperty(grievance))
-                {
-                    return null;
-                }
-            }
+            // If we find an object with a non-uniform value, return null, otherwise, return the value
+            return objects.Skip(1).Any(x => value != getProperty(x)) ? (bool?)null : value;
+        }
 
-            // Return the value
-            return value;
+        public static string GetMixedValue<T>(List<T> objects, Func<T, string> getProperty)
+        {
+            string value = getProperty(objects.First());
+
+            // If we find an object with a non-uniform value, return null, otherwise, return the value
+            return objects.Skip(1).Any(x => value != getProperty(x)) ? null : value;
         }
 
         /// <summary>
@@ -239,8 +217,44 @@ namespace RevengineEditor.Components
             // Update grievances
             UpdateMSGrievance();
 
+            // Create the component list
+            MakeMotivatorList();
+
             // Enable updates
             _updatesEnabled = true;
+        }
+
+        /// <summary>
+        /// Compile all the Motivators to be included in the Motivator List
+        /// </summary>
+        private void MakeMotivatorList()
+        {
+            // Clear the list
+            _motivators.Clear();
+
+            // Select the first selected Grieevance
+            Grievance firstGrievance = SelectedGrievances.FirstOrDefault();
+
+            // If null, return
+            if (firstGrievance == null) return;
+            
+            // Go through its list of Motivators
+            foreach(Motivator motivator in firstGrievance.Motivators)
+            {
+                // Select the Motivator's type
+                Type type = motivator.GetType();
+
+                // Check if any of the other Grievances have the same Motivator Type
+                if(!SelectedGrievances.Skip(1).Any(grievance => grievance.GetMotivator(type) == null))
+                {
+                    // If so, retrieve it and add it to the list of Motivators
+                    Debug.Assert(Motivators.FirstOrDefault(x => x.GetType() == type) == null);
+
+                    // Need to include the MuultiSelection variant
+                    _motivators.Add(motivator.GetMultiSelectionMotivator(this));
+                }
+            }
+
         }
 
         /// <summary>

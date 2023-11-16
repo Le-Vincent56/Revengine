@@ -79,6 +79,9 @@ namespace RevengineEditor.Editors
 
         private void OneName_TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
+            // Set the property name to an empty string
+            _propertyName = string.Empty;
+
             // Get the rename action
             _undoAction = GetRenameAction();
         }

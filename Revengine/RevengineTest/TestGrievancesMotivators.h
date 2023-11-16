@@ -54,7 +54,7 @@ private:
 			_added++;
 
 			// Create a new grievance
-			grievance::grievance grievance{ grievance::create_grievance(grievance_info) };
+			grievance::grievance grievance{ grievance::create(grievance_info) };
 
 			// Confirm the grievance is valid
 			assert(grievance.is_valid() && id::is_valid(grievance.get_id()));
@@ -62,7 +62,7 @@ private:
 			// Add the grievance to the vector
 			_grievances.push_back(grievance);
 
-			assert(grievance::is_alive(grievance));
+			assert(grievance::is_alive(grievance.get_id()));
 
 			// Decrement count
 			count--;
@@ -91,9 +91,9 @@ private:
 
 			// If the grievance is valid, then remove it and erase it from the array
 			if (grievance.is_valid()) {
-				grievance::remove_grievance(grievance);
+				grievance::remove(grievance.get_id());
 				_grievances.erase(_grievances.begin() + index);
-				assert(!grievance::is_alive(grievance));
+				assert(!grievance::is_alive(grievance.get_id()));
 			}
 
 			// Decrement count

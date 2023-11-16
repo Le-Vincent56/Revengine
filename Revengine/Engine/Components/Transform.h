@@ -8,6 +8,6 @@ namespace revengine::transform {
 		f32 scale[3]{ 1.f, 1.f, 1.f }; // Scale with default values of 1
 	};
 
-	motivator create_transform(const init_info& info, grievance::grievance grievance);
-	void remove_transform(motivator m);
+	motivator create(const init_info& info, grievance::grievance grievance);
+	void remove(motivator m);
 }

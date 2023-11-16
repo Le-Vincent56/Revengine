@@ -129,6 +129,9 @@ namespace RevengineEditor.Utilities.Controls
 
             // Get the position with respect to this control
             _mouseXStart = e.GetPosition(this).X;
+
+            // Give the NumberBox the focus
+            Focus();
         }
     }
 }

@@ -11,9 +11,13 @@
     <ClInclude Include="EngineAPI\Grievance.h" />
     <ClInclude Include="EngineAPI\TransformMotivator.h" />
     <ClInclude Include="Utilities\MathTypes.h" />
+    <ClInclude Include="EngineAPI\ScriptMotivator.h" />
+    <ClInclude Include="Components\Script.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\Grievance.cpp" />
     <ClCompile Include="Components\Transform.cpp" />
+    <ClCompile Include="Components\Script.cpp" />
+    <ClCompile Include="Core\Main.cpp" />
   </ItemGroup>
 </Project>

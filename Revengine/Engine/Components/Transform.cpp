@@ -9,7 +9,7 @@ namespace revengine::transform {
 		utl::vector<math::v3> scales;
 	}
 
-	motivator create_transform (const init_info& info, grievance::grievance grievance) {
+	motivator create (const init_info& info, grievance::grievance grievance) {
 		assert(grievance.is_valid());
 		const id::id_type grievance_index{ id::index(grievance.get_id()) };
 
@@ -34,7 +34,7 @@ namespace revengine::transform {
 		return motivator(transform_id{(id::id_type)positions.size() - 1});
 	}
 
-	void remove_transform(motivator m) {
+	void remove(motivator m) {
 		// Confirm that the motivator is valid
 		assert(m.is_valid());
 	}

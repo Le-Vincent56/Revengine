@@ -63,7 +63,7 @@ id::id_type CreateGrievance(grievance_descriptor* g) {
 	};
 
 	// Return the ID given by the newly created grievance from the grievance_info to the editor
-	return grievance::create_grievance(grievance_info).get_id();
+	return grievance::create(grievance_info).get_id();
 }
 
 EDITOR_INTERFACE
@@ -72,5 +72,5 @@ void RemoveGrievance(id::id_type id) {
 	assert(id::is_valid(id));
 
 	// Remove the grievancw attached to the ID
-	grievance::remove_grievance(grievance_from_id(id));
+	grievance::remove(grievance::grievance_id{id});
 }

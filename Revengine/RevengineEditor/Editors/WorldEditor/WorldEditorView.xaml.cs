@@ -32,9 +32,6 @@ namespace RevengineEditor.Editors
         {
             Loaded -= OnWorldEditorViewLoaded;
             Focus();
-
-            // Refocus the window after every undo/redo command
-            ((INotifyCollectionChanged)Project.UndoRedo.UndoList).CollectionChanged += (s, e) => Focus();
         }
     }
 }
