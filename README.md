@@ -23,3 +23,28 @@ Grievance CreateGrievance(grievanceDescriptor* g) { }    // C#
 The Revengine uses a basic Project-Scene-GameObject-Component hierarchy, but uses some different terminology to fit with the name. Here's some equivalencies from Unity to the Revengine:
 * GameObject -> Grievance
 * Component -> Motivator
+
+## Goals/Checklist
+* Project Template Creating/Loading                             ✓
+* Project Scene Add/Remove                                      ✓
+* Grievances and Motivators - Editor                            ✓
+* Editor Undo/Redo System                                       ✓
+* Editor Message Log                                            ✓
+* Editor Grievance/Motivator Multiselection                     ✓
+* Generation-Index Identifiers                                  ✓
+* Grievances and Motivators - Engine                            ✓
+* Engine-to-Editor Pipeline DLL                                 ✓
+* Custom Script Motivators                          
+* Visual Studio Solution/Project Auto-Generation (EnvDTE)       
+* Visual Studio Source File Generation
+* DLL for Loading Game Code
+* Project Saving in Binary Format
+* Editor - Custom Game Window
+* Geometry Pipeline
+* View and Projection Matrices
+* Rotations and Quaternions
+* World Planes for Scenes
+* Mesh Renderers
+* Camera Movement
+* Input Handling
+* Lights (Point/Spotlight)
