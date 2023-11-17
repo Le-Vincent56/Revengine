@@ -23,35 +23,33 @@ namespace RevengineEditor.Classes
     /// </summary>
     public partial class NewScriptDialog : Window
     {
-        private static readonly string _cppCode = @"
-        #include ""{0}.h""
+        private static readonly string _cppCode = @"#include ""{0}.h""
 
-        namespace {1} {{
-            REGISTER_SCRIPT({0});
-            void {0}::begin_play() {{ 
+namespace {1} {{
+    REGISTER_SCRIPT({0});
+    void {0}::begin_play() {{ 
 
-            }}
+    }}
 
-            void {0}::update(float dt) {{ 
+    void {0}::update(float dt) {{ 
 
-            }} 
+    }} 
 
-        }} // namespace {1}";
+    }} // namespace {1}";
 
-        private static readonly string _hCode = @"
-        #pragma once
+        private static readonly string _hCode = @"#pragma once
 
-        namespace {1} {{
+    namespace {1} {{
 
-	        class {0} : public revengine::script::grievance_script {{
-	        public:
-		        constexpr explicit {0}(revengine::grievance::grievance grievance)
-			        : revengine::script::grievance_script{{grievance}} {{ }}
-                void begin_play() override;
-		        void update(float dt) override;
-            private:
-	        }};
-        }} // namespace {1}";
+	    class {0} : public revengine::script::grievance_script {{
+	    public:
+		    constexpr explicit {0}(revengine::grievance::grievance grievance)
+			    : revengine::script::grievance_script{{grievance}} {{ }}
+            void begin_play() override;
+		    void update(float dt) override;
+        private:
+	    }};
+    }} // namespace {1}";
 
         private static readonly string _namespace = GetNamespaceFromProjectName();
 
