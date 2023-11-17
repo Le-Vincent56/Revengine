@@ -112,12 +112,13 @@ namespace RevengineEditor.GameProject
                     ProjectTemplate template = Serializer.FromFile<ProjectTemplate>(templateFile);
 
                     // Assign data
-                    template.IconFilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(templateFile), "Icon.png"));
-                    template.Icon = File.ReadAllBytes(template.IconFilePath);
-                    template.ScreenshotFilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(templateFile), "Screenshot.png"));
-                    template.Screenshot = File.ReadAllBytes(template.ScreenshotFilePath);
-                    template.ProjectFilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(templateFile), template.ProjectFile));
                     template.TemplatePath = Path.GetDirectoryName(templateFile);
+                    template.IconFilePath = Path.GetFullPath(Path.Combine(template.TemplatePath, "Icon.png"));
+                    template.Icon = File.ReadAllBytes(template.IconFilePath);
+                    template.ScreenshotFilePath = Path.GetFullPath(Path.Combine(template.TemplatePath, "Screenshot.png"));
+                    template.Screenshot = File.ReadAllBytes(template.ScreenshotFilePath);
+                    template.ProjectFilePath = Path.GetFullPath(Path.Combine(template.TemplatePath, template.ProjectFile));
+                    
 
                     // Add each template to the list
                     _projectTemplates.Add(template);
@@ -222,7 +223,7 @@ namespace RevengineEditor.GameProject
 
                 // Read the tempalte project file and format the projectPath with it
                 string projectXML = File.ReadAllText(template.ProjectFilePath);
-                projectXML = string.Format(projectXML, ProjectName, ProjectPath);
+                projectXML = string.Format(projectXML, ProjectName, path);
                 string projectPath = Path.GetFullPath(Path.Combine(path, $"{ProjectName}{Project.Extension}"));
 
                 // Write the formatted file at the given project path

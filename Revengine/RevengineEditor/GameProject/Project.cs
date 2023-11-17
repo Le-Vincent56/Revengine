@@ -1,4 +1,5 @@
-﻿using RevengineEditor.Utilities;
+﻿using RevengineEditor.Classes;
+using RevengineEditor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,7 +25,8 @@ namespace RevengineEditor.GameProject
         [DataMember]
         public string Path { get; private set; }
 
-        public string FullPath { get { return $@"{Path}{Name}\{Name}{Extension}"; } }
+        public string FullPath { get { return $@"{Path}{Name}{Extension}"; } }
+        public string Solution { get { return $@"{Path}{Name}.sln"; } } 
 
         [DataMember(Name = "Scenes")]
         private ObservableCollection<Scene> _scenes = new ObservableCollection<Scene>();
@@ -156,6 +158,9 @@ namespace RevengineEditor.GameProject
 
         public void UnloadProject()
         {
+            // Close Visual Studio
+            VisualStudio.CloseVisualStudio();
+
             // Reset the UndoRedo class, as they are no longer relevant
             UndoRedo.Reset();
         }

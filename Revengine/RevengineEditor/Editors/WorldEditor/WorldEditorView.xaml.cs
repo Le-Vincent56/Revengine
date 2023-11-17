@@ -1,4 +1,5 @@
-﻿using RevengineEditor.GameProject;
+﻿using RevengineEditor.Classes;
+using RevengineEditor.GameProject;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -32,6 +33,12 @@ namespace RevengineEditor.Editors
         {
             Loaded -= OnWorldEditorViewLoaded;
             Focus();
+        }
+
+        private void OnNewScript_Button_Click(object sender, RoutedEventArgs e)
+        {
+            // Show the Dialog for a new script
+            new NewScriptDialog().ShowDialog();
         }
     }
 }
