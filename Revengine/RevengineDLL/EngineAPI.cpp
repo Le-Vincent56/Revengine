@@ -26,12 +26,12 @@ EDITOR_INTERFACE u32 LoadGameCodeDLL(const char* dll_path) {
 
 EDITOR_INTERFACE u32 UnloadGameCodeDLL() {
 	// Check that the game_code_dll exists
-	if (game_code_dll) return FALSE;
-	//assert(game_code_dll);
+	if (!game_code_dll) return FALSE;
+	assert(game_code_dll);
 
 	// Free the library and assert the result
-	int result = FreeLibrary(game_code_dll);
-	//assert(result);
+	int result{ FreeLibrary(game_code_dll) };
+	assert(result);
 
 	// Set to nullptr for memory
 	game_code_dll = nullptr;
