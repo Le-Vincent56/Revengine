@@ -29,36 +29,44 @@ namespace RevengineEditor.EngineAPIStructs
 
 namespace RevengineEditor.DLLWrappers
 {
-    static class EngineAPI
+    public static class EngineAPI
     {
         // Find DLL file
-        private const string _dllName = "RevengineDLL.dll";
+        private const string _engineDLL = "RevengineDLL.dll";
+        [DllImport(_engineDLL, CharSet = CharSet.Ansi)]
+        public static extern int LoadGameCodeDLL(string dllPath);
 
-        // Import functions
-        [DllImport(_dllName)]
-        private static extern int CreateGrievance(GameGrievanceDescriptor desc);
-        public static int CreateGrievance(Grievance grievance)
+        [DllImport(_engineDLL, CharSet = CharSet.Ansi)]
+        public static extern int UnloadGameCodeDLL();
+
+        internal static class GrievanceAPI
         {
-            GameGrievanceDescriptor desc = new GameGrievanceDescriptor();
-
-            // Transform Motivator
+            // Import functions
+            [DllImport(_engineDLL)]
+            private static extern int CreateGrievance(GameGrievanceDescriptor desc);
+            public static int CreateGrievance(Grievance grievance)
             {
-                // Copy over Transform data
-                Transform transform = grievance.GetMotivator<Transform>();
-                desc.Transform.Position = transform.Position;
-                desc.Transform.Rotation = transform.Rotation;
-                desc.Transform.Scale = transform.Scale;
+                GameGrievanceDescriptor desc = new GameGrievanceDescriptor();
+
+                // Transform Motivator
+                {
+                    // Copy over Transform data
+                    Transform transform = grievance.GetMotivator<Transform>();
+                    desc.Transform.Position = transform.Position;
+                    desc.Transform.Rotation = transform.Rotation;
+                    desc.Transform.Scale = transform.Scale;
+                }
+
+                // Call DLL function to create the Grievance in the Engine
+                return CreateGrievance(desc);
             }
 
-            // Call DLL function to create the Grievance in the Engine
-            return CreateGrievance(desc);
-        }
-
-        [DllImport(_dllName)]
-        private static extern void RemoveGrievance(int id);
-        public static void RemoveGrievance(Grievance grievance)
-        {
-            RemoveGrievance(grievance.GrievanceID);
+            [DllImport(_engineDLL)]
+            private static extern void RemoveGrievance(int id);
+            public static void RemoveGrievance(Grievance grievance)
+            {
+                RemoveGrievance(grievance.GrievanceID);
+            }
         }
     }
 }

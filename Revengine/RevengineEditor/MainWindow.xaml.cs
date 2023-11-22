@@ -1,4 +1,5 @@
 ﻿using RevengineEditor.GameProject;
+using RevengineEditor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,7 +23,7 @@ namespace RevengineEditor
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static string RevenginePath { get; private set; } = @"C:\Users\levin\source\repos\Revengine\Revengine";
+        public static string RevenginePath { get; private set; }
 
         public MainWindow()
         {
@@ -33,6 +34,7 @@ namespace RevengineEditor
 
         private void OnMainWindowLoaded(object sender, RoutedEventArgs e)
         {
+            Logger.Log(MessageType.Info, $"Main Window Loaded");
             Loaded -= OnMainWindowLoaded;
             GetEnginePath();
             OpenProjectBrowserDialog();
@@ -53,7 +55,10 @@ namespace RevengineEditor
         {
             // Check if the Environment variable is set
             string? revenginePath = Environment.GetEnvironmentVariable("REVENGINE_ENGINE", EnvironmentVariableTarget.User);
-            if (revenginePath == null || !Directory.Exists(Path.Combine(revenginePath, @"Engine\EngineAPI")))
+
+            Logger.Log(MessageType.Info, $"Current Revengine Environment is {revenginePath}");
+
+            if (revenginePath == null || !Directory.Exists(Path.Combine(revenginePath, @"Engine\EngineAPI\")))
             {
                 EnginePathDialog dialog = new EnginePathDialog();
                 if(dialog.ShowDialog() == true)
@@ -71,6 +76,8 @@ namespace RevengineEditor
                 // Set the path
                 RevenginePath = revenginePath;
             }
+
+            Logger.Log(MessageType.Info, $"RevenginePath set to {RevenginePath}");
         }
 
         /// <summary>

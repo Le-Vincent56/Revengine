@@ -8,11 +8,15 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.InteropServices;
 using System.IO;
+using RevengineEditor.GameProject;
 
 namespace RevengineEditor.Classes
 {
     static class VisualStudio
     {
+        public static bool BuildSucceeded { get; private set; } = true;
+        public static bool BuildDone { get; private set; } = true;
+        
         private static EnvDTE80.DTE2 _vsInstance = null;
         private static readonly string _progID = "VisualStudio.DTE"; // Visual Studio 2019
 
@@ -193,6 +197,114 @@ namespace RevengineEditor.Classes
             }
 
             return true;
+        }
+
+        public static bool IsDebugging()
+        {
+            bool result = false;
+
+            try
+            {
+                // Check if the Visual Studio instance is not null and is running a current program/debugging process
+                result = _vsInstance != null &&
+                    (_vsInstance.Debugger.CurrentProgram != null || _vsInstance.Debugger.CurrentMode == EnvDTE.dbgDebugMode.dbgRunMode);
+            }catch(Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+
+                // Wait for a second
+                if (!result)
+                    System.Threading.Thread.Sleep(1000);
+            }
+
+            return result;
+        }
+
+        private static void OnBuildSolutionBegin(string project, string projectConfig, string platform, string solutionConfig)
+        {
+            Logger.Log(MessageType.Info, $"Building {project}, {projectConfig}, {platform}, {solutionConfig}");
+        }
+
+        private static void OnBuildSolutionDone(string project, string projectConfig, string platform, string solutionConfig, bool success)
+        {
+            // If BuildDone is true, then this method already ran
+            if (BuildDone) return;
+
+            // Send Logger information
+            if (success)
+            {
+                Logger.Log(MessageType.Info, $"Building {projectConfig} Configuration Succeeded");
+            }
+            else
+            {
+                Logger.Log(MessageType.Error, $"Building {projectConfig} Configuration Failed");
+            }
+
+            // Set BuildDone and BuildSucceeded
+            BuildDone = true;
+            BuildSucceeded = success;
+        }
+
+        public static void BuildSolution(Project project, string configName, bool showWindow = true)
+        {
+            // Check if Visual Studio is debugging
+            if(IsDebugging())
+            {
+                Logger.Log(MessageType.Error, "Visual Studio is currently running a process.");
+                return;
+            }
+
+            // Open Visual Studio
+            OpenVisualStudio(project.Solution);
+
+            // Initialize the Build process
+            BuildSucceeded = false;
+            BuildDone = BuildSucceeded;
+
+            for(int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    // If the solution is not open, then force Visual Studio
+                    // to open it
+                    if (!_vsInstance.Solution.IsOpen)
+                        _vsInstance.Solution.Open(project.Solution);
+
+                    // Decide whether or not to show Visual Studio
+                    _vsInstance.MainWindow.Visible = showWindow;
+
+                    // Set events
+                    _vsInstance.Events.BuildEvents.OnBuildProjConfigBegin += OnBuildSolutionBegin;
+                    _vsInstance.Events.BuildEvents.OnBuildProjConfigDone += OnBuildSolutionDone;
+
+                    // Because we loaded a DLL, we could have a reference to a .pdb file, which would cause
+                    // File.Delete to fail - so we need a try/catch
+                    try
+                    {
+                        // Delete all .pdb files
+                        foreach (string pdbFile in Directory.GetFiles(Path.Combine($"{project.Path}", $@"x64\{configName}"), "*.pdb"))
+                        {
+                            File.Delete(pdbFile);
+                        }
+                    } catch (Exception ex) {
+                        Debug.WriteLine(ex.Message);
+                    }
+
+                    // Activate the build configuration for the solution
+                    _vsInstance.Solution.SolutionBuild.SolutionConfigurations.Item(configName).Activate();
+
+                    // Tell Visual Studio to build
+                    _vsInstance.ExecuteCommand("Build.BuildSolution");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
+                    Debug.WriteLine($"Attempt {i}: Failed to Build {project.Name} ");
+
+                    // Wait one second before trying again
+                    System.Threading.Thread.Sleep(1000);
+                }
+            }
         }
     }
 }

@@ -81,7 +81,7 @@ namespace RevengineEditor.Utilities.Controls
                         // If Shift is held down, have a greater increase  
                         _multiplier = 0.1;
                     }
-                    else _multiplier = 0.1; // Default multiplier
+                    else _multiplier = 0.01; // Default multiplier
 
                     // Add the distance to the original value
                     double newValue = _originalValue + (distance * _multiplier * Multiplier);

@@ -35,21 +35,20 @@ namespace {1} {{
 
     }} 
 
-    }} // namespace {1}";
+}} // namespace {1}";
 
         private static readonly string _hCode = @"#pragma once
 
-    namespace {1} {{
-
-	    class {0} : public revengine::script::grievance_script {{
+namespace {1} {{
+	class {0} : public revengine::script::grievance_script {{
 	    public:
 		    constexpr explicit {0}(revengine::grievance::grievance grievance)
-			    : revengine::script::grievance_script{{grievance}} {{ }}
+		        : revengine::script::grievance_script{{grievance}} {{ }}
             void begin_play() override;
 		    void update(float dt) override;
         private:
 	    }};
-    }} // namespace {1}";
+}} // namespace {1}";
 
         private static readonly string _namespace = GetNamespaceFromProjectName();
 
@@ -68,7 +67,7 @@ namespace {1} {{
             return projectName;
         }
 
-        bool Validate()
+        private bool Validate()
         {
             bool isValid = false;
             string name = scriptName.Text.Trim();

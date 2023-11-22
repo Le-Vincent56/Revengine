@@ -35,19 +35,21 @@ namespace RevengineEditor
             messageTextBlock.Text = string.Empty;
 
             // Test the text to see if it is bad or invalid
-            if(string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
                 messageTextBlock.Text = "Invalid Path";
-            } else if(path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+            }
+            else if (path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
             {
                 messageTextBlock.Text = "Invalid Character(s)";
-            } else if(!Directory.Exists(Path.Combine(path, @"Engine\EngineAPI\")))
+            }
+            else if (!Directory.Exists(Path.Combine(path, @"Engine\EngineAPI\")))
             {
                 messageTextBlock.Text = "Unable to Find Revengine at the Specified Location";
             }
 
             // If there's nothing in the messageTextBlock, that means the path is valid
-            if(string.IsNullOrEmpty(messageTextBlock.Text))
+            if (string.IsNullOrEmpty(messageTextBlock.Text))
             {
                 // Add a separator at the end of the path if it doesn't have one already
                 if (!Path.EndsInDirectorySeparator(path))

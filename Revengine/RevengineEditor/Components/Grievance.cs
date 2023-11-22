@@ -43,11 +43,11 @@ namespace RevengineEditor.Components
                     _isActive = value;
                     if(_isActive)
                     {
-                        GrievanceID = EngineAPI.CreateGrievance(this);
+                        GrievanceID = EngineAPI.GrievanceAPI.CreateGrievance(this);
                         Debug.Assert(ID.Isvalid(_grievanceId));
                     } else if(ID.Isvalid(GrievanceID))
                     {
-                        EngineAPI.RemoveGrievance(this);
+                        EngineAPI.GrievanceAPI.RemoveGrievance(this);
                         GrievanceID = ID.INVALID_ID;
                     }
                     OnPropertyChanged(nameof(IsActive));
