@@ -19,7 +19,7 @@ namespace RevengineEditor.Components
             new Func<Grievance, object, Motivator>[]
             {
                 (grievance, data) => new Transform(grievance),
-                (grievance, data) => new Script(grievance){Name = (string) data}
+                (grievance, data) => new Script(grievance){Name = (string)data}
             };
 
         public static Func<Grievance, object, Motivator> GetCreationFunction(MotivatorType motivatorType)

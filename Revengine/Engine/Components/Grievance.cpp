@@ -1,7 +1,6 @@
 #include "Grievance.h"
 #include "Transform.h"
 #include "Script.h"
-#include <iostream>
 
 namespace revengine::grievance {
 	// Anonymous namespace
@@ -85,17 +84,17 @@ namespace revengine::grievance {
 		// Confirm if the grievance is alive
 		assert(is_alive(id));
 
-		// Remove transforms
-		transform::remove(transforms[index]);
-
-		// Put a default component in that slot
-		transforms[index] = {};
-
 		// Remove scripts
 		if (scripts[index].is_valid()) {
 			script::remove(scripts[index]);
 			scripts[index] = {};
 		}
+
+		// Remove transforms
+		transform::remove(transforms[index]);
+
+		// Put a default component in that slot
+		transforms[index] = {};
 
 		// Push back the ID
 		free_ids.push_back(id);
@@ -130,7 +129,7 @@ namespace revengine::grievance {
 
 	script::motivator grievance::script() const {
 		// Confirm that the grievance is alive
-		//assert(is_alive(_id));
+		assert(is_alive(_id));
 
 		// Get the index of the grievance
 		const id::id_type index{ id::index(_id) };

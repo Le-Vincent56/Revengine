@@ -48,7 +48,10 @@ namespace RevengineEditor.Components
             }
         }
 
-        public MSScript(MSObject mSGrievance) : base(mSGrievance) { }
+        public MSScript(MSObject mSGrievance) : base(mSGrievance) 
+        {
+            Refresh();
+        }
 
         protected override bool UpdateMotivators(string propertyName)
         {

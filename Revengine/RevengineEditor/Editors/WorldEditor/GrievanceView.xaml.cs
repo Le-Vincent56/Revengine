@@ -191,6 +191,7 @@ namespace RevengineEditor.Editors
         private void OnAddScriptMotivator(object sender, RoutedEventArgs e)
         {
             AddMotivator(MotivatorType.Script, (sender as MenuItem).Header.ToString());
+            MSObject vm = DataContext as MSObject;
         }
     }
 }
