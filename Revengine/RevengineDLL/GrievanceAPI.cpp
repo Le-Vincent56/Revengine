@@ -2,14 +2,14 @@
 #include "Id.h"
 #include "..\Engine\Components\Grievance.h"
 #include "..\Engine\Components\Transform.h"
+#include "..\Engine\Components\Script.h"
 #include "Common.h"
 
 using namespace revengine;
 
 // Need to convert from Editor format to Engine format - using an anonymous namespace for this
 namespace {
-
-	struct transform_component {
+	struct transform_motivator {
 		f32 position[3];
 		f32 rotation[3];
 		f32 scale[3];
@@ -33,8 +33,19 @@ namespace {
 		}
 	};
 
+	struct script_motivator {
+		script::detail::script_creator script_creator;
+
+		script::init_info to_init_info() {
+			script::init_info info{};
+			info.script_creator = script_creator;
+			return info;
+		}
+	};
+
 	struct grievance_descriptor {
-		transform_component transform;
+		transform_motivator transform;
+		script_motivator script;
 	};
 
 	grievance::grievance grievance_from_id(id::id_type id) {
@@ -54,8 +65,11 @@ id::id_type CreateGrievance(grievance_descriptor* g) {
 	// a grievance_info
 	grievance_descriptor& desc{ *g };
 	transform::init_info transform_info{ desc.transform.to_init_info() };
+	script::init_info script_info{ desc.script.to_init_info() };
+
 	grievance::grievance_info grievance_info{
 		&transform_info,
+		&script_info
 	};
 
 	// Return the ID given by the newly created grievance from the grievance_info to the editor

@@ -23,7 +23,7 @@ namespace revengine::id {
 	constexpr u32 min_deleted_elements{ 1024 }; // After 1024 elements, write back to the available slots
 
 	using generation_type = std::conditional_t<detail::generation_bits <= 16, std::conditional_t<detail::generation_bits <= 8, u8, u16>, u32>;
-	
+
 	// Check that generation_type is not bigger than generation_bits and that 
 	// id_type is not bigger than index_bits
 	static_assert(sizeof(generation_type) * 8 >= detail::generation_bits);
@@ -95,7 +95,7 @@ namespace revengine::id {
 				: id_base{ id } {}										\
 			constexpr name() : id_base { 0 } {}							\
 		};
-	}
 #else
 #define DEFINE_TYPED_ID(name) using name = id::id_type;
 #endif
+}

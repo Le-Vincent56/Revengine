@@ -1,4 +1,5 @@
 ﻿using RevengineEditor.Classes;
+using RevengineEditor.Components;
 using RevengineEditor.DLLWrappers;
 using RevengineEditor.Utilities;
 using System;
@@ -58,6 +59,20 @@ namespace RevengineEditor.GameProject
 
         public BuildConfiguration StandaloneBuildConfig => BuildConfig == 0 ? BuildConfiguration.Debug : BuildConfiguration.Release;
         public BuildConfiguration DLLBuildConfig => BuildConfig == 0 ? BuildConfiguration.DebugEditor : BuildConfiguration.ReleaseEditor;
+
+        private string[] _availableScripts;
+        public string[] AvailableScripts
+        {
+            get { return _availableScripts; }
+            set
+            {
+                if(_availableScripts != value)
+                {
+                    _availableScripts = value;
+                    OnPropertyChanged(nameof(AvailableScripts));
+                }
+            }
+        }
 
         [DataMember(Name = "Scenes")]
         private ObservableCollection<Scene> _scenes = new ObservableCollection<Scene>();
@@ -202,6 +217,7 @@ namespace RevengineEditor.GameProject
                 OnPropertyChanged(nameof(Scenes));
             }
             ActiveScene = Scenes.FirstOrDefault(x => x.IsActive);
+            Debug.Assert(ActiveScene != null);
 
             // Build the game code without showing the editor
             await BuildGameCodeDLL(false);
@@ -215,6 +231,9 @@ namespace RevengineEditor.GameProject
         /// </summary>
         public void UnloadProject()
         {
+            // Unload game code DLL
+            UnloadGameCodeDLL();
+
             // Close Visual Studio
             VisualStudio.CloseVisualStudio();
 
@@ -269,6 +288,11 @@ namespace RevengineEditor.GameProject
             // Check if the file exists and if the loading is successful
             if(File.Exists(dll) && EngineAPI.LoadGameCodeDLL(dll) != 0)
             {
+                AvailableScripts = EngineAPI.GetScriptNames();
+
+                // Activate each Grievance with a script (adding it to the engine)
+                ActiveScene.Grievances.Where(x => x.GetMotivator<Script>() != null).ToList().ForEach(x => x.IsActive = true);
+
                 Logger.Log(MessageType.Info, "Game code DLL loaded successfully!");
             } else
             {
@@ -281,10 +305,14 @@ namespace RevengineEditor.GameProject
         /// </summary>
         private void UnloadGameCodeDLL()
         {
+            // Deactivate each Grievance with a script (removing it from the engine)
+            ActiveScene.Grievances.Where(x => x.GetMotivator<Script>() != null).ToList().ForEach(x => x.IsActive = false);
+
             // Unload the game code through the EngineAPI
             if (EngineAPI.UnloadGameCodeDLL() != 0)
             {
                 Logger.Log(MessageType.Info, "Game code DLL unloaded successfully!");
+                AvailableScripts = null;
             }
         }
     }

@@ -3,11 +3,13 @@ using RevengineEditor.GameProject;
 using RevengineEditor.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -18,6 +20,19 @@ using System.Windows.Shapes;
 
 namespace RevengineEditor.Editors
 {
+    public class NullableBoolToBoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value is bool b && b == true;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value is bool b && b == true;
+        }
+    }
+
     /// <summary>
     /// Interaction logic for GrievancesView.xaml
     /// </summary>
@@ -118,6 +133,64 @@ namespace RevengineEditor.Editors
 
             // Add the UndoRedo actions
             Project.UndoRedo.Add(new UndoRedoAction(undoAction, redoAction, viewModel.IsEnabled == true ? "Enabled Grievances" : "Disabled Grievances"));
+        }
+
+        private void OnAddMotivator_Button_PreviewMouse_LBD(object sender, MouseButtonEventArgs e)
+        {
+            ContextMenu menu = FindResource("addMotivatorMenu") as ContextMenu;
+            ToggleButton btn = sender as ToggleButton;
+            btn.IsChecked = true;
+            menu.Placement = PlacementMode.Bottom;
+            menu.PlacementTarget = btn;
+            menu.MinWidth = btn.ActualWidth;
+            menu.IsOpen = true;
+        }
+
+        private void AddMotivator(MotivatorType motivatorType, object data)
+        {
+            Func<Grievance, object, Motivator> creationFunction = MotivatorFactory.GetCreationFunction(motivatorType);
+            List<(Grievance grievance, Motivator motivator)> changedEntities = new List<(Grievance grievance, Motivator motivator)>();
+            MSObject vm = DataContext as MSObject;
+
+            // Look through all the selected objects
+            foreach(Grievance grievance in vm.SelectedGrievances)
+            {
+                // Get the Motivator
+                Motivator motivator = creationFunction(grievance, data);
+
+                // Try to add the Motivator to each Grievance
+                if(grievance.AddMotivator(motivator))
+                {
+                    changedEntities.Add((grievance, motivator));
+                }
+            }
+
+            // If there are any changed entities, add actions to the UndoRedo manager
+            if(changedEntities.Any())
+            {
+                vm.Refresh();
+
+                Project.UndoRedo.Add(new UndoRedoAction(
+                    () =>
+                    {
+                        // Remove the newly added Motivator
+                        changedEntities.ForEach(x => x.grievance.RemoveMotivator(x.motivator));
+                        (DataContext as MSObject).Refresh();
+                    },
+                    () =>
+                    {
+                        // Redo - add the Motivator back
+                        changedEntities.ForEach(x => x.grievance.AddMotivator(x.motivator));
+                        (DataContext as MSObject).Refresh();
+                    },
+                    $"Added {motivatorType} motivator"
+                ));
+            }
+        }
+
+        private void OnAddScriptMotivator(object sender, RoutedEventArgs e)
+        {
+            AddMotivator(MotivatorType.Script, (sender as MenuItem).Header.ToString());
         }
     }
 }

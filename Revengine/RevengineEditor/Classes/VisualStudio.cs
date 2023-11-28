@@ -202,19 +202,24 @@ namespace RevengineEditor.Classes
         public static bool IsDebugging()
         {
             bool result = false;
+            bool tryAgain = true;
 
-            try
+            for(int i = 0; i < 3 && tryAgain; i++)
             {
-                // Check if the Visual Studio instance is not null and is running a current program/debugging process
-                result = _vsInstance != null &&
-                    (_vsInstance.Debugger.CurrentProgram != null || _vsInstance.Debugger.CurrentMode == EnvDTE.dbgDebugMode.dbgRunMode);
-            }catch(Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
+                try
+                {
+                    // Check if the Visual Studio instance is not null and is running a current program/debugging process
+                    result = _vsInstance != null &&
+                        (_vsInstance.Debugger.CurrentProgram != null || _vsInstance.Debugger.CurrentMode == EnvDTE.dbgDebugMode.dbgRunMode);
+                    tryAgain = false;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine(ex.Message);
 
-                // Wait for a second
-                if (!result)
+                    // Wait for a second
                     System.Threading.Thread.Sleep(1000);
+                }
             }
 
             return result;
@@ -261,7 +266,7 @@ namespace RevengineEditor.Classes
             BuildSucceeded = false;
             BuildDone = BuildSucceeded;
 
-            for(int i = 0; i < 3; i++)
+            for(int i = 0; i < 3 && !BuildDone; i++)
             {
                 try
                 {

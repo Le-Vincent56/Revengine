@@ -17,6 +17,7 @@ namespace RevengineEditor.Components
 {
     [DataContract]
     [KnownType(typeof(Transform))]
+    [KnownType(typeof(Script))]
     internal class Grievance : ViewModelBase
     {
         private int _grievanceId = ID.INVALID_ID;
@@ -32,6 +33,7 @@ namespace RevengineEditor.Components
                 }
             }
         }
+
         private bool _isActive;
         public bool IsActive
         {
@@ -54,6 +56,7 @@ namespace RevengineEditor.Components
                 }
             }
         }
+
         private string _name;
         [DataMember]
         public string Name
@@ -100,6 +103,64 @@ namespace RevengineEditor.Components
             OnDeserialized(new StreamingContext());
         }
 
+        /// <summary>
+        /// Add a Motivator to the Grievance
+        /// </summary>
+        /// <param name="motivator">The Motivator to add</param>
+        /// <returns>True if the Motivator was successfully added, false if not</returns>
+        public bool AddMotivator(Motivator motivator)
+        {
+            // Assert that the Motivator exists
+            Debug.Assert(motivator != null);
+
+            if(!Motivators.Any(x => x.GetType() == motivator.GetType()))
+            {
+                // Temporarily set the Grievance as inactive (remove from the engine)
+                IsActive = false;
+
+                // Add the Motivator
+                _motivators.Add(motivator);
+
+                // Set the Grievance as active
+                IsActive = true;
+
+                return true;
+            }
+
+            // Log a message if the Motivator type already exists
+            Logger.Log(MessageType.Warning, $"Entity {Name} already has a {motivator.GetType().Name} component");
+
+            return false;
+        }
+
+        /// <summary>
+        /// Remove a Motivator from a Grievance
+        /// </summary>
+        /// <param name="motivator">The Motivator to remove</param>
+        public void RemoveMotivator(Motivator motivator)
+        {
+            // Assert that the Motivator exists
+            Debug.Assert(motivator != null);
+
+            if (motivator is Transform) return; // Cannot remove a transform
+
+            if(_motivators.Contains(motivator))
+            {
+                // Temporarily set the Grievance as inactive (remove from the engine)
+                IsActive = false;
+
+                // Remove the Motivator
+                _motivators.Remove(motivator);
+
+                // Set the Grievance as active
+                IsActive = true;
+            }
+        }
+
+        /// <summary>
+        /// Take care of Grievances on Deserialization
+        /// </summary>
+        /// <param name="context"></param>
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
         {

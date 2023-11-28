@@ -1,6 +1,7 @@
 #include "Grievance.h"
 #include "Transform.h"
 #include "Script.h"
+#include <iostream>
 
 namespace revengine::grievance {
 	// Anonymous namespace
@@ -129,7 +130,7 @@ namespace revengine::grievance {
 
 	script::motivator grievance::script() const {
 		// Confirm that the grievance is alive
-		assert(is_alive(_id));
+		//assert(is_alive(_id));
 
 		// Get the index of the grievance
 		const id::id_type index{ id::index(_id) };

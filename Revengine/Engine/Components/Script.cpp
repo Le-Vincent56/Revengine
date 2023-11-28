@@ -19,6 +19,17 @@ namespace revengine::script {
 			return reg;
 		}
 
+		#ifdef USE_WITH_EDITOR
+			// This is a static variable because of the initialization order
+			// of static data - this way, we can be certain that the data is initialized
+			// before accessing it
+			utl::vector<std::string>& script_names()
+			{
+				static utl::vector<std::string> names;
+				return names;
+			}
+		#endif
+
 		bool exists(script_id id) {
 			// Assert that the ID is valid
 			assert(id::is_valid(id));
@@ -45,6 +56,24 @@ namespace revengine::script {
 			assert(result);
 			return result;
 		}
+
+		script_creator get_script_creator(size_t tag) {
+			// Look up the script by its tag
+			auto script = revengine::script::registry().find(tag);
+
+			// Confirm that we find it
+			assert(script != revengine::script::registry().end() && script->first == tag);
+
+			// Return the function
+			return script->second;
+		}
+
+		#ifdef USE_WITH_EDITOR
+			u8 add_script_name(const char* name) {
+				script_names().emplace_back(name);
+				return true;
+			}
+		#endif
 	}
 
 	motivator create(init_info info, grievance::grievance grievance) {
@@ -113,3 +142,27 @@ namespace revengine::script {
 		id_mapping[id::index(id)] = id::invalid_id;
 	}
 }
+
+#ifdef USE_WITH_EDITOR
+#include <atlsafe.h>
+
+extern "C" __declspec(dllexport)
+LPSAFEARRAY get_script_names() {
+	// Get the size of the vector
+	const u32 size{ (u32)revengine::script::script_names().size() };
+
+	// If there is no size, then return nullptr
+	if (!size) return nullptr;
+
+	// Allocate enough memory for the script names
+	CComSafeArray<BSTR> names(size);
+
+	// Convert to STR format for .NET
+	for (u32 i{ 0 }; i < size; i++) {
+		names.SetAt(i, A2BSTR_EX(revengine::script::script_names()[i].c_str()), false);
+	}
+
+	// Send free memory task to .NET framework
+	return names.Detach();
+}
+#endif
