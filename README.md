@@ -34,10 +34,10 @@ The Revengine uses a basic Project-Scene-GameObject-Component hierarchy, but use
 * Generation-Index Identifiers----------------------------------☑
 * Grievances and Motivators - Engine----------------------------☑
 * Engine-to-Editor Pipeline DLL---------------------------------☑
-* Custom Script Motivators--------------------------------------☐
+* Custom Script Motivators--------------------------------------☑
 * Visual Studio Solution/Project Auto-Generation (EnvDTE)-------☑
 * Visual Studio Source File Generation--------------------------☑
-* DLL for Loading Game Code-------------------------------------☐
+* DLL for Loading Game Code-------------------------------------☑
 * Project Saving in Binary Format-------------------------------☐
 * Editor - Custom Game Window-----------------------------------☐
 * Geometry Pipeline---------------------------------------------☐
