@@ -48,3 +48,9 @@ The Revengine uses a basic Project-Scene-GameObject-Component hierarchy, but use
 * Camera Movement-----------------------------------------------☐
 * Input Handling------------------------------------------------☐
 * Lights (Point/Spotlight)--------------------------------------☐
+
+## Command Hotkeys
+Undo: Ctrl + Z
+Redo: Ctrl + Shift + Z
+Save: Ctrl + S
+Build: Ctrl + Shift + B
